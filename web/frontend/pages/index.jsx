@@ -2,11 +2,12 @@ import {
   Card,
   Page,
   Layout,
-  TextContainer,
-  Image,
-  Stack,
-  Link,
   Text,
+  Image,
+  InlineStack,
+  BlockStack,
+  Link,
+  Box,
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { useTranslation, Trans } from "react-i18next";
@@ -22,66 +23,68 @@ export default function HomePage() {
       <TitleBar title={t("HomePage.title")} />
       <Layout>
         <Layout.Section>
-          <Card sectioned>
-            <Stack
-              wrap={false}
-              spacing="extraTight"
-              distribution="trailing"
-              alignment="center"
-            >
-              <Stack.Item fill>
-                <TextContainer spacing="loose">
-                  <Text as="h2" variant="headingMd">
-                    {t("HomePage.heading")}
-                  </Text>
-                  <p>
-                    <Trans
-                      i18nKey="HomePage.yourAppIsReadyToExplore"
-                      components={{
-                        PolarisLink: (
-                          <Link url="https://polaris.shopify.com/" external />
-                        ),
-                        AdminApiLink: (
-                          <Link
-                            url="https://shopify.dev/api/admin-graphql"
-                            external
-                          />
-                        ),
-                        AppBridgeLink: (
-                          <Link
-                            url="https://shopify.dev/apps/tools/app-bridge"
-                            external
-                          />
-                        ),
-                      }}
+          <Card>
+            <Box padding="400">
+              <InlineStack
+                wrap={false}
+                gap="400"
+                align="space-between"
+                blockAlign="center"
+              >
+                <Box width="100%">
+                  <BlockStack gap="400">
+                    <Text as="h2" variant="headingMd">
+                      {t("HomePage.heading")}
+                    </Text>
+                    <Text as="p">
+                      <Trans
+                        i18nKey="HomePage.yourAppIsReadyToExplore"
+                        components={{
+                          PolarisLink: (
+                            <Link url="https://polaris.shopify.com/" external />
+                          ),
+                          AdminApiLink: (
+                            <Link
+                              url="https://shopify.dev/api/admin-graphql"
+                              external
+                            />
+                          ),
+                          AppBridgeLink: (
+                            <Link
+                              url="https://shopify.dev/apps/tools/app-bridge"
+                              external
+                            />
+                          ),
+                        }}
+                      />
+                    </Text>
+                    <Text as="p">{t("HomePage.startPopulatingYourApp")}</Text>
+                    <Text as="p">
+                      <Trans
+                        i18nKey="HomePage.learnMore"
+                        components={{
+                          ShopifyTutorialLink: (
+                            <Link
+                              url="https://shopify.dev/apps/getting-started/add-functionality"
+                              external
+                            />
+                          ),
+                        }}
+                      />
+                    </Text>
+                  </BlockStack>
+                </Box>
+                <Box>
+                  <Box padding="400">
+                    <Image
+                      source={trophyImage}
+                      alt={t("HomePage.trophyAltText")}
+                      width={120}
                     />
-                  </p>
-                  <p>{t("HomePage.startPopulatingYourApp")}</p>
-                  <p>
-                    <Trans
-                      i18nKey="HomePage.learnMore"
-                      components={{
-                        ShopifyTutorialLink: (
-                          <Link
-                            url="https://shopify.dev/apps/getting-started/add-functionality"
-                            external
-                          />
-                        ),
-                      }}
-                    />
-                  </p>
-                </TextContainer>
-              </Stack.Item>
-              <Stack.Item>
-                <div style={{ padding: "0 20px" }}>
-                  <Image
-                    source={trophyImage}
-                    alt={t("HomePage.trophyAltText")}
-                    width={120}
-                  />
-                </div>
-              </Stack.Item>
-            </Stack>
+                  </Box>
+                </Box>
+              </InlineStack>
+            </Box>
           </Card>
         </Layout.Section>
         <Layout.Section>
