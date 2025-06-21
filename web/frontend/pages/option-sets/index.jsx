@@ -11,6 +11,7 @@ import {
   useSetIndexFiltersMode,
   ChoiceList,
   Box,
+  Card,
   InlineStack,
 } from "@shopify/polaris";
 import { useState, useCallback } from "react";
@@ -80,10 +81,13 @@ export default function OptionSets() {
     []
   );
 
-  const handleAction = useCallback((action) => {
-    setPopoverActive(false);
-    navigate(action);
-  }, [navigate]);
+  const handleAction = useCallback(
+    (action) => {
+      setPopoverActive(false);
+      navigate(action);
+    },
+    [navigate]
+  );
 
   const handleExportAction = () => {
     alert("Export option sets");
@@ -280,8 +284,12 @@ export default function OptionSets() {
             Option Sets
           </Text>
           <InlineStack gap="300">
-            <Button onClick={handleExportAction} disabled>Export option sets</Button>
-            <Button onClick={handleImportAction} disabled>Import option sets</Button>
+            <Button onClick={handleExportAction} disabled>
+              Export option sets
+            </Button>
+            <Button onClick={handleImportAction} disabled>
+              Import option sets
+            </Button>
             <Popover
               active={popoverActive}
               activator={
@@ -313,76 +321,78 @@ export default function OptionSets() {
       </Box>
 
       {/* Filters and Table */}
-      <IndexFilters
-        sortOptions={sortOptions}
-        sortSelected={sortSelected}
-        queryValue={queryValue}
-        queryPlaceholder="Search by name"
-        onQueryChange={handleFiltersQueryChange}
-        onQueryClear={handleQueryValueRemove}
-        cancelAction={() => setQueryValue("")}
-        onSort={handleSortChange}
-        tabs={tabs}
-        selected={selected}
-        onSelect={setSelected}
-        canCreateNewView={false}
-        filters={filters}
-        appliedFilters={appliedFilters}
-        onClearAll={handleFiltersClearAll}
-        mode={mode}
-        setMode={setMode}
-      />
+      <Card padding="0">
+        <IndexFilters
+          sortOptions={sortOptions}
+          sortSelected={sortSelected}
+          queryValue={queryValue}
+          queryPlaceholder="Search by name"
+          onQueryChange={handleFiltersQueryChange}
+          onQueryClear={handleQueryValueRemove}
+          cancelAction={() => setQueryValue("")}
+          onSort={handleSortChange}
+          tabs={tabs}
+          selected={selected}
+          onSelect={setSelected}
+          canCreateNewView={false}
+          filters={filters}
+          appliedFilters={appliedFilters}
+          onClearAll={handleFiltersClearAll}
+          mode={mode}
+          setMode={setMode}
+        />
 
-      <IndexTable
-        resourceName={resourceName}
-        itemCount={filteredRows.length}
-        selectedItemsCount={
-          allResourcesSelected ? "All" : selectedResources.length
-        }
-        onSelectionChange={handleSelectionChange}
-        headings={[
-          { title: "Name", sortable: true },
-          { title: "Status", sortable: true },
-          { title: "Sales channels", sortable: true },
-          { title: "Date created", sortable: true },
-        ]}
-        sortDirection={sortDirection}
-        sortColumnIndex={sortColumn}
-        onSort={(columnIndex, direction) => {
-          setSortColumn(columnIndex);
-          setSortDirection(direction);
-        }}
-      >
-        {filteredRows.map(
-          ({ id, name, status, salesChannels, dateCreated }, index) => (
-            <IndexTable.Row
-              id={id}
-              key={id}
-              selected={selectedResources.includes(id)}
-              position={index}
-            >
-              <IndexTable.Cell>
-                <Text variant="bodyMd" fontWeight="medium">
-                  {name}
-                </Text>
-              </IndexTable.Cell>
-              <IndexTable.Cell>
-                <Badge tone={status === "Active" ? "success" : undefined}>
-                  {status}
-                </Badge>
-              </IndexTable.Cell>
-              <IndexTable.Cell>
-                <Text variant="bodyMd">{salesChannels}</Text>
-              </IndexTable.Cell>
-              <IndexTable.Cell>
-                <Text variant="bodyMd" tone="subdued">
-                  {dateCreated}
-                </Text>
-              </IndexTable.Cell>
-            </IndexTable.Row>
-          )
-        )}
-      </IndexTable>
+        <IndexTable
+          resourceName={resourceName}
+          itemCount={filteredRows.length}
+          selectedItemsCount={
+            allResourcesSelected ? "All" : selectedResources.length
+          }
+          onSelectionChange={handleSelectionChange}
+          headings={[
+            { title: "Name", sortable: true },
+            { title: "Status", sortable: true },
+            { title: "Sales channels", sortable: true },
+            { title: "Date created", sortable: true },
+          ]}
+          sortDirection={sortDirection}
+          sortColumnIndex={sortColumn}
+          onSort={(columnIndex, direction) => {
+            setSortColumn(columnIndex);
+            setSortDirection(direction);
+          }}
+        >
+          {filteredRows.map(
+            ({ id, name, status, salesChannels, dateCreated }, index) => (
+              <IndexTable.Row
+                id={id}
+                key={id}
+                selected={selectedResources.includes(id)}
+                position={index}
+              >
+                <IndexTable.Cell>
+                  <Text variant="bodyMd" fontWeight="medium">
+                    {name}
+                  </Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Badge tone={status === "Active" ? "success" : undefined}>
+                    {status}
+                  </Badge>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text variant="bodyMd">{salesChannels}</Text>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                  <Text variant="bodyMd" tone="subdued">
+                    {dateCreated}
+                  </Text>
+                </IndexTable.Cell>
+              </IndexTable.Row>
+            )
+          )}
+        </IndexTable>
+      </Card>
     </Page>
   );
 }
