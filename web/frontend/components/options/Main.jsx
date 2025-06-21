@@ -1,4 +1,5 @@
-import { Page, Grid, TitleBar } from "@shopify/polaris";
+import { Page, Grid } from "@shopify/polaris";
+import { TitleBar } from "@shopify/app-bridge-react";
 import React from "react";
 
 import { ElementMain } from "./ElementMain";

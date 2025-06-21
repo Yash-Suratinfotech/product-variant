@@ -13,9 +13,9 @@ import {
   Box,
   Card,
   InlineStack,
-  TitleBar
 } from "@shopify/polaris";
 import { useState, useCallback } from "react";
+import { TitleBar } from "@shopify/app-bridge-react";
 import { useNavigate } from "react-router-dom";
 
 const allRows = [
