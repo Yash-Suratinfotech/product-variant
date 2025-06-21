@@ -49,26 +49,25 @@ export function ProductsCard() {
 
   return (
     <Card title={t("ProductsCard.title")}>
-      <BlockStack gap="400" align="start">
-        <BlockStack gap="200">
-          <p>{t("ProductsCard.description")}</p>
-          <Text as="h4" variant="headingMd">
-            {t("ProductsCard.totalProductsHeading")}
-            <Text variant="bodyMd" as="p" fontWeight="semibold">
-              {isLoadingCount ? "-" : data?.count}
-            </Text>
-          </Text>
+      <BlockStack gap="200">
+        <p>{t("ProductsCard.description")}</p>
+        <Text as="h4" variant="headingMd">
+          {t("ProductsCard.totalProductsHeading")}
+        </Text>
+        <Text variant="bodyMd" as="p" fontWeight="semibold">
+          {isLoadingCount ? "-" : data?.count}
+        </Text>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <Button
             onClick={handlePopulate}
             loading={isPopulating}
             variant="primary"
-            
           >
             {t("ProductsCard.populateProductsButton", {
               count: productsCount,
             })}
           </Button>
-        </BlockStack>
+        </div>
       </BlockStack>
     </Card>
   );
