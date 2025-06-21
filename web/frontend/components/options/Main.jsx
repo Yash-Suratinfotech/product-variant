@@ -1,4 +1,4 @@
-import { Page, Grid } from "@shopify/polaris";
+import { Page, Grid, TitleBar } from "@shopify/polaris";
 import React from "react";
 
 import { ElementMain } from "./ElementMain";
@@ -9,6 +9,7 @@ export function OptionLayout({ id }) {
   return (
     <div className="option-layout">
       <Page fullWidth>
+        <TitleBar title={"Product Variant"} />
         <div className="grid-container">
           <Grid
             columns={{

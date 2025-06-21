@@ -13,6 +13,7 @@ import {
   Box,
   Card,
   InlineStack,
+  TitleBar
 } from "@shopify/polaris";
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -277,6 +278,7 @@ export default function OptionSets() {
 
   return (
     <Page>
+      <TitleBar title={"Product Variant"} />
       {/* Header Section */}
       <Box paddingBlockEnd="600">
         <InlineStack align="space-between" blockAlign="center">
