@@ -107,7 +107,7 @@ export function Products() {
             size="micro"
             icon={QuestionCircleIcon}
             accessibilityLabel="Question for selecting products"
-            plain
+            variant="plain"
           ></Button>
         </InlineStack>
       </Box>

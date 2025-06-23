@@ -1,4 +1,4 @@
-@use './components/knob';
+@use "./components/knob";
 
 .option-layout {
   .Polaris-Page--fullWidth {
@@ -11,4 +11,8 @@
     border-radius: 8px;
     overflow: hidden;
   }
+}
+
+.Polaris-Popover__Content {
+  max-width: fit-content;
 }

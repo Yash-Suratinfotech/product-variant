@@ -80,7 +80,7 @@ export function Customers() {
             size="micro"
             icon={QuestionCircleIcon}
             accessibilityLabel="Question for selecting customers"
-            plain
+            variant="plain"
           ></Button>
         </InlineStack>
       </Box>
