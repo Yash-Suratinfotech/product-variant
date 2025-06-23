@@ -1,1 +1,1 @@
-export { OptionLayout } from "./Main";
+export { OptionLayout } from "./layout";

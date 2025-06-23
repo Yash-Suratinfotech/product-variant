@@ -2,9 +2,9 @@ import { Page, Grid } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import React from "react";
 
-import { ElementMain } from "./ElementMain";
-import { Header } from "./Header";
-import { Preview } from "./Preview";
+import { Section } from "./section";
+import { Header } from "./header";
+import { Preview } from "./preview";
 
 export function OptionLayout({ id }) {
   return (
@@ -28,7 +28,7 @@ export function OptionLayout({ id }) {
             </Grid.Cell>
 
             <Grid.Cell area="element">
-              <ElementMain />
+              <Section />
             </Grid.Cell>
 
             <Grid.Cell area="preview">
