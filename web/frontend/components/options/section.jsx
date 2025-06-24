@@ -33,7 +33,7 @@ export function Section() {
   };
 
   return (
-    <div>
+    <>
       <Box
         background="bg-surface"
         borderInlineEndWidth="025"
@@ -74,6 +74,6 @@ export function Section() {
           </Box>
         </InlineStack>
       </Box>
-    </div>
+    </>
   );
 }

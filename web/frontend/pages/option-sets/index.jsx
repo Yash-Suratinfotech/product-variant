@@ -12,6 +12,7 @@ import {
   ChoiceList,
   Box,
   Card,
+  Link,
   InlineStack,
 } from "@shopify/polaris";
 import { useState, useCallback } from "react";
@@ -373,9 +374,14 @@ export default function OptionSets() {
                 position={index}
               >
                 <IndexTable.Cell>
-                  <Text variant="bodyMd" fontWeight="medium">
-                    {name}
-                  </Text>
+                  <Button
+                    variant="monochromePlain"
+                    onClick={() => navigate(`/option-sets/${id}`)}
+                  >
+                    <Text variant="bodyMd" fontWeight="medium">
+                      {name}
+                    </Text>
+                  </Button>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
                   <Badge tone={status === "Active" ? "success" : undefined}>

@@ -8,15 +8,18 @@ import {
   Text,
   Box,
 } from "@shopify/polaris";
-import {
-  StarFilledIcon,
-} from "@shopify/polaris-icons";
+import { StarFilledIcon } from "@shopify/polaris-icons";
 import { useState, useCallback } from "react";
-import { defaultInputTypes, defaultSelectionTypes, defaultStaticTypes } from '../../../helpers/element-type';
+import {
+  defaultInputTypes,
+  defaultSelectionTypes,
+  defaultStaticTypes,
+} from "../../../helpers/element-type";
 
 export function SelectTypesPopover({
   buttonText = "More actions",
   buttonProps = {},
+  activator = null,
   onItemSelect = () => {},
 }) {
   const [popoverActive, setPopoverActive] = useState(false);
@@ -75,17 +78,23 @@ export function SelectTypesPopover({
     }));
   };
 
-  const activator = (
+  const defaultActivator = (
     <Button onClick={togglePopoverActive} {...buttonProps}>
       {buttonText}
     </Button>
   );
 
+  // If activator is a function, call it with togglePopoverActive
+  const resolvedActivator =
+    typeof activator === "function"
+      ? activator(togglePopoverActive)
+      : activator || defaultActivator;
+
   return (
-    <div style={{ height: "auto", width: "100%" }}>
+    <>
       <Popover
         active={popoverActive}
-        activator={activator}
+        activator={resolvedActivator}
         ariaHaspopup="listbox"
         autofocusTarget="first-node"
         onClose={togglePopoverActive}
@@ -154,6 +163,6 @@ export function SelectTypesPopover({
           </Tabs>
         </Box>
       </Popover>
-    </div>
+    </>
   );
 }

@@ -12,10 +12,13 @@ import {
   Popover,
   ActionList,
 } from "@shopify/polaris";
-import { MenuHorizontalIcon } from "@shopify/polaris-icons";
+import { MenuHorizontalIcon, ArrowLeftIcon } from "@shopify/polaris-icons";
 import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function Header({ id }) {
+  const navigate = useNavigate();
+
   // State for option set data
   const [optionSet, setOptionSet] = useState({
     title: "New Option Set",
@@ -119,6 +122,12 @@ export function Header({ id }) {
       <Box padding="400">
         <InlineStack align="space-between" blockAlign="center">
           <InlineStack wrap={false} gap="400">
+            <Button
+              variant="tertiary"
+              icon={ArrowLeftIcon}
+              accessibilityLabel="Back to option sets"
+              onClick={() => navigate(`/option-sets`)}
+            />
             <Text variant="bodyLg" as="h4" fontWeight="semibold">
               {optionSet.title} - {id}
             </Text>
