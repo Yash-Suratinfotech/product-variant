@@ -12,7 +12,7 @@ import {
   PersonIcon,
 } from "@shopify/polaris-icons";
 
-import { Elements } from "./views/elements";
+import { ElementsView } from "./views/elements";
 import { Products } from "./views/products";
 import { Customers } from "./views/customers";
 
@@ -22,7 +22,7 @@ export function Section() {
   const renderContent = () => {
     switch (activeTab) {
       case "elements":
-        return <Elements />;
+        return <ElementsView />;
       case "products":
         return <Products />;
       case "customers":

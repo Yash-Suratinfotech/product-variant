@@ -7,8 +7,11 @@ import {
   InlineGrid,
 } from "@shopify/polaris";
 import React from "react";
+import { useCounter } from "../providers/CounterProvider";
 
 export function Preview() {
+  const { count } = useCounter();
+  console.log("✌️count 2--->", count);
   return (
     <Box background="bg-surface">
       <Scrollable style={{ width: "100%", height: "calc(100vh - 105px)" }}>

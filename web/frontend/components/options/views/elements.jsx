@@ -5,7 +5,6 @@ import {
   InlineStack,
   Button,
   BlockStack,
-  Card,
   Icon,
   Collapsible,
 } from "@shopify/polaris";
@@ -15,50 +14,32 @@ import {
   ChevronRightIcon,
   DragHandleIcon,
   PlusCircleIcon,
-  SelectIcon,
-  TextBlockIcon,
-  CheckboxIcon,
   LayoutBuyButtonIcon,
   DuplicateIcon,
   DeleteIcon,
 } from "@shopify/polaris-icons";
 import React, { useState, useCallback } from "react";
 
+import {
+  findElementIcon,
+  findElementName,
+  mockElements,
+} from "../../../helpers";
 import { SelectTypesPopover } from "./selectTypesPopover";
+// import { useCounter } from "../../providers/CounterProvider";
 
-export function Elements() {
+export function ElementsView() {
   const [groupExpanded, setGroupExpanded] = useState(true);
-  const [selectedElement, setSelectedElement] = useState("select");
   const [groupHover, setGroupHover] = useState(false);
   const [hoveredElementId, setHoveredElementId] = useState(null);
 
+  // const { count, mockElements } = useCounter();
+  // console.log("✌️count 1--->", mockElements, count);
+
   // Mock elements data
-  const [elements, setElements] = useState([
-    {
-      id: "select-1",
-      type: "select",
-      label: "Select",
-      icon: SelectIcon,
-      isActive: true,
-    },
-    {
-      id: "textarea-1",
-      type: "textarea",
-      label: "Textarea",
-      icon: TextBlockIcon,
-      isActive: false,
-    },
-    {
-      id: "checkbox-1",
-      type: "checkbox",
-      label: "Checkbox",
-      icon: CheckboxIcon,
-      isActive: false,
-    },
-  ]);
+  const [elements, setElements] = useState(mockElements);
 
   const handleElementClick = useCallback((elementId) => {
-    setSelectedElement(elementId);
     // Update active state
     setElements((prev) =>
       prev.map((el) => ({
@@ -136,29 +117,31 @@ export function Elements() {
               <Collapsible open={groupExpanded} id="group-collapsible">
                 <Box paddingInlineStart="400">
                   <BlockStack gap="150">
-                    {elements.map((element) => (
+                    {elements.map((e) => (
                       <div
                         className="element-row"
-                        onMouseEnter={() => setHoveredElementId(element.id)}
+                        onMouseEnter={() => setHoveredElementId(e.id)}
                         onMouseLeave={() => setHoveredElementId(null)}
                       >
                         <Button
-                          key={element.id}
+                          key={e.id}
                           variant="tertiary"
-                          onClick={() => handleElementClick(element.id)}
+                          onClick={() => handleElementClick(e.id)}
                           fullWidth
                           textAlign="start"
                         >
                           <InlineStack gap="200" align="center" wrap={false}>
                             <Icon
                               source={
-                                hoveredElementId === element.id
+                                hoveredElementId === e.id
                                   ? DragHandleIcon
-                                  : element.icon
+                                  : findElementIcon(e.type)
                               }
                             />
-                            <Text variant="bodyMd">{element.label}</Text>
-                            {hoveredElementId === element.id && (
+                            <Text variant="bodyMd">
+                              {e.config?.label || findElementName(e.type)}
+                            </Text>
+                            {hoveredElementId === e.id && (
                               <div
                                 style={{ display: "flex", marginLeft: "auto" }}
                               >

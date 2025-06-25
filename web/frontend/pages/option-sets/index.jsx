@@ -18,50 +18,18 @@ import { useState, useCallback, useEffect } from "react";
 import { useAppBridge, TitleBar } from "@shopify/app-bridge-react";
 import { useNavigate } from "react-router-dom";
 
-const allRows = [
-  {
-    id: "1",
-    name: "New Option Set",
-    status: "Active",
-    salesChannels: 2,
-    dateCreated: "2025-06-20 05:32:18",
-  },
-  {
-    id: "2",
-    name: "demo",
-    status: "Active",
-    salesChannels: 1,
-    dateCreated: "2025-06-19 11:10:36",
-  },
-  {
-    id: "3",
-    name: "test",
-    status: "Active",
-    salesChannels: 2,
-    dateCreated: "2025-06-20 09:15:22",
-  },
-  {
-    id: "4",
-    name: "sample",
-    status: "Draft",
-    salesChannels: 3,
-    dateCreated: "2025-06-21 14:30:45",
-  },
-  {
-    id: "5",
-    name: "example",
-    status: "Draft",
-    salesChannels: 4,
-    dateCreated: "2025-06-22 16:45:10",
-  },
-];
+import { sortOptions } from "../../helpers";
+import { useOptionSets } from "../../hooks";
 
 export default function OptionSets() {
   const navigate = useNavigate();
   const shopify = useAppBridge();
 
+  // table data
+  const { optionSets, loading, fetchOptionSets } =
+    useOptionSets(shopify);
+
   // Tab management
-  const [itemStrings, setItemStrings] = useState(["All", "Active", "Draft"]);
   const [selected, setSelected] = useState(0);
 
   // Search and filters
@@ -91,109 +59,18 @@ export default function OptionSets() {
     [navigate]
   );
 
-  const handleData = async () => {
-    const response = await fetch("/api/option-set");
-    if (response.ok) {
-      shopify.toast.show("Option sets fetched successfully");
-    } else {
-      shopify.toast.show("There was an error fetching Option sets", {
-        isError: true,
-      });
-    }
-  };
-
   useEffect(() => {
-    handleData();
-  }, []);
-
-  const handleCreate = async () => {
-    const response = await fetch("/api/option-set", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: "New Option Set",
-        description: "Description of the new option set",
-        status: "Active",
-        is_template: false,
-        sales_channels: ["Online Store"],
-        fields: [
-          {
-            groupId: "group1",
-            id: "field1",
-            type: "textarea",
-            position: 0,
-            config: {
-              label: "Textarea Field",
-              name: "textarea_field",
-              placeholder: "Enter textarea",
-              helpText: "This is a textarea field",
-              isRequired: true,
-              defaultValue: "Default text here",
-              className: "custom-textarea",
-              columnWidth: "100%",
-            },
-          },
-        ],
-      }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      shopify.toast.show("Option set created successfully");
-      navigate(`/option-sets/${data.id}`);
-    } else {
-      shopify.toast.show("There was an error creating the option set", {
-        isError: true,
-      });
-    }
-  };
-
-  const handleExportAction = () => {
-    alert("Export option sets");
-  };
-
-  const handleImportAction = () => {
-    alert("Import option sets");
-  };
+    fetchOptionSets();
+  }, [fetchOptionSets]);
 
   // Tab configuration
-  const tabs = itemStrings.map((item, index) => ({
+  const tabs = ["All", "Active", "Draft"].map((item, index) => ({
     content: item,
     index,
     onAction: () => {},
     id: `${item}-${index}`,
     isLocked: index === 0,
   }));
-
-  // Sort options
-  const sortOptions = [
-    { label: "Name", value: "name asc", directionLabel: "A-Z" },
-    { label: "Name", value: "name desc", directionLabel: "Z-A" },
-    { label: "Status", value: "status asc", directionLabel: "A-Z" },
-    { label: "Status", value: "status desc", directionLabel: "Z-A" },
-    {
-      label: "Sales channels",
-      value: "channels asc",
-      directionLabel: "Ascending",
-    },
-    {
-      label: "Sales channels",
-      value: "channels desc",
-      directionLabel: "Descending",
-    },
-    {
-      label: "Date created",
-      value: "date asc",
-      directionLabel: "Oldest to newest",
-    },
-    {
-      label: "Date created",
-      value: "date desc",
-      directionLabel: "Newest to oldest",
-    },
-  ];
 
   // Filter handlers
   const handleFiltersQueryChange = useCallback(
@@ -277,7 +154,7 @@ export default function OptionSets() {
   }
 
   // Data filtering logic
-  let filteredRows = allRows.filter((row) =>
+  let filteredRows = optionSets.filter((row) =>
     row.name.toLowerCase().includes(queryValue.toLowerCase())
   );
 
@@ -308,12 +185,12 @@ export default function OptionSets() {
         bValue = b.status;
         break;
       case 2:
-        aValue = a.salesChannels;
-        bValue = b.salesChannels;
+        aValue = a.sales_channels;
+        bValue = b.sales_channels;
         break;
       case 3:
-        aValue = a.dateCreated;
-        bValue = b.dateCreated;
+        aValue = a.created_at;
+        bValue = b.created_at;
         break;
       default:
         return 0;
@@ -328,8 +205,9 @@ export default function OptionSets() {
     useIndexResourceState(filteredRows);
 
   return (
-    <Page>
-      <TitleBar title={"Product Variant"} />
+    <Page fullWidth>
+      <TitleBar title={"Option Sets"} />
+
       {/* Header Section */}
       <Box paddingBlockEnd="600">
         <InlineStack align="space-between" blockAlign="center">
@@ -337,12 +215,6 @@ export default function OptionSets() {
             Option Sets
           </Text>
           <InlineStack gap="300">
-            <Button onClick={handleExportAction} disabled>
-              Export option sets
-            </Button>
-            <Button onClick={handleImportAction} disabled>
-              Import option sets
-            </Button>
             <Popover
               active={popoverActive}
               activator={
@@ -358,13 +230,6 @@ export default function OptionSets() {
             >
               <ActionList
                 items={[
-                  {
-                    content: "Create new option set",
-                    onAction: () => {
-                      handleCreate();
-                      togglePopoverActive();
-                    },
-                  },
                   {
                     content: "Create from scratch",
                     onAction: () => handleAction("/option-sets/new"),
@@ -405,25 +270,26 @@ export default function OptionSets() {
         <IndexTable
           resourceName={resourceName}
           itemCount={filteredRows.length}
+          loading={loading}
+          onSelectionChange={handleSelectionChange}
+          sortDirection={sortDirection}
+          sortColumnIndex={sortColumn}
           selectedItemsCount={
             allResourcesSelected ? "All" : selectedResources.length
           }
-          onSelectionChange={handleSelectionChange}
           headings={[
             { title: "Name", sortable: true },
             { title: "Status", sortable: true },
             { title: "Sales channels", sortable: true },
             { title: "Date created", sortable: true },
           ]}
-          sortDirection={sortDirection}
-          sortColumnIndex={sortColumn}
           onSort={(columnIndex, direction) => {
             setSortColumn(columnIndex);
             setSortDirection(direction);
           }}
         >
           {filteredRows.map(
-            ({ id, name, status, salesChannels, dateCreated }, index) => (
+            ({ id, name, status, sales_channels, created_at }, index) => (
               <IndexTable.Row
                 id={id}
                 key={id}
@@ -446,11 +312,11 @@ export default function OptionSets() {
                   </Badge>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
-                  <Text variant="bodyMd">{salesChannels}</Text>
+                  <Text variant="bodyMd">{sales_channels.length}</Text>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
                   <Text variant="bodyMd" tone="subdued">
-                    {dateCreated}
+                    {created_at}
                   </Text>
                 </IndexTable.Cell>
               </IndexTable.Row>

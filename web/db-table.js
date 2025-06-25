@@ -27,7 +27,7 @@ await client.query(`
     id SERIAL PRIMARY KEY,
     option_set_id INTEGER REFERENCES option_sets(id) ON DELETE CASCADE,
     group_id VARCHAR(255),
-    field_id VARCHAR(255) UNIQUE,
+    field_id VARCHAR(255),
     type VARCHAR(50) NOT NULL,
     config JSONB NOT NULL,
     position INTEGER DEFAULT 0,

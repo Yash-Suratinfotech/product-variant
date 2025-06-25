@@ -15,7 +15,10 @@ import {
   SearchIcon,
   QuestionCircleIcon,
 } from "@shopify/polaris-icons";
+
 import { Knob } from "../../Knob";
+import { ProductPicker } from "./productPicker";
+
 import React, { useState, useCallback } from "react";
 
 export function Products() {
@@ -30,8 +33,7 @@ export function Products() {
   const [applyAllExpanded, setApplyAllExpanded] = useState(false);
 
   // Product selection state
-  const [searchValue, setSearchValue] = useState("");
-  // const [selectedProducts, setSelectedProducts] = useState([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   // Handle toggle logic
   const handleManualToggle = useCallback((checked) => {
@@ -76,24 +78,9 @@ export function Products() {
     }
   }, []);
 
-  // Handle section expansion (clicking on the section header)
-  // const handleManualExpansion = useCallback(() => {
-  //   if (manualSelectionActive) {
-  //     setManualExpanded(!manualExpanded);
-  //   }
-  // }, [manualSelectionActive, manualExpanded]);
-
-  // const handleAutomaticExpansion = useCallback(() => {
-  //   if (automaticRulesActive) {
-  //     setAutomaticExpanded(!automaticExpanded);
-  //   }
-  // }, [automaticRulesActive, automaticExpanded]);
-
-  // const handleApplyAllExpansion = useCallback(() => {
-  //   if (applyToAllActive) {
-  //     setApplyAllExpanded(!applyAllExpanded);
-  //   }
-  // }, [applyToAllActive, applyAllExpanded]);
+  const handleProductSelect = (selectedIds) => {
+    console.log("Selected product IDs", selectedIds);
+  };
 
   return (
     <div>
@@ -124,7 +111,7 @@ export function Products() {
               ></Button>
               <BlockStack>
                 <Text variant="bodyMd" fontWeight="medium">
-                  Manual Selection
+                  Manual Selection {pickerOpen}
                 </Text>
                 <Text variant="bodySm" tone="subdued">
                   Choose specific products to apply this option set.
@@ -149,11 +136,10 @@ export function Products() {
                 </Text>
 
                 <TextField
-                  value={searchValue}
-                  onChange={setSearchValue}
                   placeholder="Select products"
                   prefix={<Icon source={SearchIcon} />}
                   autoComplete="off"
+                  onChange={() => setPickerOpen(true)}
                 />
 
                 {/* No Products Found State */}
@@ -273,6 +259,13 @@ export function Products() {
           </BlockStack>
         </Box>
       </Scrollable>
+
+      {/* Model For Product Selection */}
+      <ProductPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={handleProductSelect}
+      />
     </div>
   );
 }

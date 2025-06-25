@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
       "SELECT * FROM option_sets WHERE shop_id = $1 ORDER BY created_at DESC",
       [shop]
     );
-    res.json(optionSets.rows);
+    res.status(200).json(optionSets.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
 });
 
 // Assign option set to products
-router.post("/:setId/assign", async (req, res) => {
+router.post("/:setId/products", async (req, res) => {
   const { shop } = res.locals.shopify.session;
   const { setId } = req.params;
   const { productIds } = req.body;
@@ -81,7 +81,7 @@ router.post("/:setId/assign", async (req, res) => {
       )
     );
     await Promise.all(assignments);
-    res.json({ success: true, assigned: productIds.length });
+    res.status(200).json({ success: true, assigned: productIds.length });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

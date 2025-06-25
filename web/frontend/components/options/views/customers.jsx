@@ -16,14 +16,14 @@ import React, { useState, useCallback } from "react";
 
 export function Customers() {
   // Toggle states for each section
-  const [manualSelectionActive, setManualSelectionActive] = useState(true);
+  const [manualSelectionActive, setManualSelectionActive] = useState(false);
   const [automaticRulesActive, setAutomaticRulesActive] = useState(false);
-  const [applyToAllActive, setApplyToAllActive] = useState(false);
+  const [applyToAllActive, setApplyToAllActive] = useState(true);
 
   // Collapse states
-  const [manualExpanded, setManualExpanded] = useState(true);
+  const [manualExpanded, setManualExpanded] = useState(false);
   const [automaticExpanded, setAutomaticExpanded] = useState(false);
-  const [applyAllExpanded, setApplyAllExpanded] = useState(false);
+  const [applyAllExpanded, setApplyAllExpanded] = useState(true);
 
   // Handle toggle logic
   const handleManualToggle = useCallback((checked) => {

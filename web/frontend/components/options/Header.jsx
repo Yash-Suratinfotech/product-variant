@@ -9,29 +9,31 @@ import {
   Checkbox,
   BlockStack,
   Box,
-  Popover,
-  ActionList,
 } from "@shopify/polaris";
 import { MenuHorizontalIcon, ArrowLeftIcon } from "@shopify/polaris-icons";
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { useOptionSets } from "../../hooks";
+import { mockElements } from "../../helpers";
+
 export function Header({ id }) {
   const navigate = useNavigate();
 
+  const { loading, createOptionSets } = useOptionSets(shopify);
+
   // State for option set data
   const [optionSet, setOptionSet] = useState({
-    title: "New Option Set",
+    title: "Diamond Product",
     status: "Active",
     salesChannels: {
       onlineStore: true,
-      pointOfSale: true,
+      pointOfSale: false,
     },
   });
 
   // Modal and popover states
   const [modalActive, setModalActive] = useState(false);
-  const [popoverActive, setPopoverActive] = useState(false);
 
   // Form state for modal
   const [formData, setFormData] = useState({
@@ -50,7 +52,6 @@ export function Header({ id }) {
       pointOfSale: optionSet.salesChannels.pointOfSale,
     });
     setModalActive(true);
-    setPopoverActive(false);
   }, [optionSet]);
 
   const handleModalClose = useCallback(() => {
@@ -68,15 +69,10 @@ export function Header({ id }) {
       },
     });
     setModalActive(false);
+
     // You can add API call here to save data
     console.log("Saved data:", formData);
   }, [formData]);
-
-  // Popover handlers
-  const togglePopoverActive = useCallback(
-    () => setPopoverActive((popoverActive) => !popoverActive),
-    []
-  );
 
   // Form handlers
   const handleNameChange = useCallback((value) => {
@@ -95,21 +91,21 @@ export function Header({ id }) {
     setFormData((prev) => ({ ...prev, pointOfSale: value }));
   }, []);
 
-  // Action list items
-  const actionItems = [
-    {
-      content: "Manage option set",
-      onAction: handleModalOpen,
-    },
-    // {
-    //   content: "Delete",
-    //   destructive: true,
-    //   onAction: () => {
-    //     setPopoverActive(false);
-    //     console.log("Delete action");
-    //   },
-    // },
-  ];
+  const handleCreate = async () => {
+    const data = {
+      name: optionSet.title,
+      description: optionSet.description,
+      status: optionSet.status,
+      is_template: false,
+      sales_channels: optionSet.salesChannels,
+      fields: mockElements,
+    };
+    const response = await createOptionSets(data);
+
+    if (response?.ok) {
+      navigate(`/option-sets/${data.id}`);
+    }
+  };
 
   // Status options for select
   const statusOptions = [
@@ -121,7 +117,7 @@ export function Header({ id }) {
     <Box background="bg-surface" borderBlockEndWidth="025" borderColor="border">
       <Box padding="400">
         <InlineStack align="space-between" blockAlign="center">
-          <InlineStack wrap={false} gap="400">
+          <InlineStack wrap={false} gap="400" align="center">
             <Button
               variant="tertiary"
               icon={ArrowLeftIcon}
@@ -129,30 +125,23 @@ export function Header({ id }) {
               onClick={() => navigate(`/option-sets`)}
             />
             <Text variant="bodyLg" as="h4" fontWeight="semibold">
-              {optionSet.title} - {id}
+              {optionSet.title} {id ? `- ${id}` : ""}
             </Text>
             <Badge tone={optionSet.status === "Active" ? "success" : undefined}>
               {optionSet.status}
             </Badge>
-            <Popover
-              active={popoverActive}
-              activator={
-                <Button
-                  variant="tertiary"
-                  onClick={togglePopoverActive}
-                  icon={MenuHorizontalIcon}
-                  accessibilityLabel="More actions"
-                />
-              }
-              onClose={togglePopoverActive}
-            >
-              <ActionList items={actionItems} />
-            </Popover>
+            <Button
+              variant="tertiary"
+              onClick={handleModalOpen}
+              icon={MenuHorizontalIcon}
+              accessibilityLabel="More actions"
+            />
           </InlineStack>
 
           <InlineStack gap="300">
-            <Button>Preview</Button>
-            <Button variant="tertiary">⋯</Button>
+            <Button onClick={handleCreate} loading={loading}>
+              Save
+            </Button>
           </InlineStack>
         </InlineStack>
       </Box>

@@ -14,7 +14,7 @@ import {
   defaultInputTypes,
   defaultSelectionTypes,
   defaultStaticTypes,
-} from "../../../helpers/element-type";
+} from "../../../helpers";
 
 export function SelectTypesPopover({
   buttonText = "More actions",

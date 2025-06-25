@@ -1,9 +1,11 @@
-// web/api/db.js
+import dotenv from "dotenv";
+dotenv.config();
+
 import pkg from 'pg';
 const { Pool } = pkg;
 
 const pool = new Pool({
-  connectionString: "postgres://postgres:123456@localhost:5432/shopify", // adjust as needed
+  connectionString: process.env.DB_URL, // adjust as needed
 });
 
 export default {
