@@ -12,11 +12,10 @@ import {
   ChoiceList,
   Box,
   Card,
-  Link,
   InlineStack,
 } from "@shopify/polaris";
-import { useState, useCallback } from "react";
-import { TitleBar } from "@shopify/app-bridge-react";
+import { useState, useCallback, useEffect } from "react";
+import { useAppBridge, TitleBar } from "@shopify/app-bridge-react";
 import { useNavigate } from "react-router-dom";
 
 const allRows = [
@@ -59,6 +58,7 @@ const allRows = [
 
 export default function OptionSets() {
   const navigate = useNavigate();
+  const shopify = useAppBridge();
 
   // Tab management
   const [itemStrings, setItemStrings] = useState(["All", "Active", "Draft"]);
@@ -90,6 +90,65 @@ export default function OptionSets() {
     },
     [navigate]
   );
+
+  const handleData = async () => {
+    const response = await fetch("/api/option-set");
+    if (response.ok) {
+      shopify.toast.show("Option sets fetched successfully");
+    } else {
+      shopify.toast.show("There was an error fetching Option sets", {
+        isError: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    handleData();
+  }, []);
+
+  const handleCreate = async () => {
+    const response = await fetch("/api/option-set", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: "New Option Set",
+        description: "Description of the new option set",
+        status: "Active",
+        is_template: false,
+        sales_channels: ["Online Store"],
+        fields: [
+          {
+            groupId: "group1",
+            id: "field1",
+            type: "textarea",
+            position: 0,
+            config: {
+              label: "Textarea Field",
+              name: "textarea_field",
+              placeholder: "Enter textarea",
+              helpText: "This is a textarea field",
+              isRequired: true,
+              defaultValue: "Default text here",
+              className: "custom-textarea",
+              columnWidth: "100%",
+            },
+          },
+        ],
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      shopify.toast.show("Option set created successfully");
+      navigate(`/option-sets/${data.id}`);
+    } else {
+      shopify.toast.show("There was an error creating the option set", {
+        isError: true,
+      });
+    }
+  };
 
   const handleExportAction = () => {
     alert("Export option sets");
@@ -217,15 +276,6 @@ export default function OptionSets() {
     });
   }
 
-  // Helper function to check if array/string is empty
-  const isEmpty = (value) => {
-    if (Array.isArray(value)) {
-      return value.length === 0;
-    } else {
-      return value === "" || value == null;
-    }
-  };
-
   // Data filtering logic
   let filteredRows = allRows.filter((row) =>
     row.name.toLowerCase().includes(queryValue.toLowerCase())
@@ -308,6 +358,13 @@ export default function OptionSets() {
             >
               <ActionList
                 items={[
+                  {
+                    content: "Create new option set",
+                    onAction: () => {
+                      handleCreate();
+                      togglePopoverActive();
+                    },
+                  },
                   {
                     content: "Create from scratch",
                     onAction: () => handleAction("/option-sets/new"),

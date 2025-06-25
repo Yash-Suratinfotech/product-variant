@@ -8,7 +8,7 @@ export function ProductsCard() {
   const shopify = useAppBridge();
   const { t } = useTranslation();
   const [isPopulating, setIsPopulating] = useState(false);
-  const productsCount = 5;
+  const productsCount = 1;
 
   const {
     data,
