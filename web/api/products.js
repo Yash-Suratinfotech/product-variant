@@ -74,19 +74,4 @@ router.post("/", async (req, res) => {
   res.status(status).send({ success: status === 200, error });
 });
 
-// GET /api/products/count
-router.get("/count", async (_req, res) => {
-  const client = new shopify.api.clients.Rest({
-    session: res.locals.shopify.session,
-  });
-
-  try {
-    const response = await client.get({ path: "products/count" });
-    res.status(200).send({ count: response.body.count });
-  } catch (error) {
-    console.error("REST count error:", error);
-    res.status(500).send({ error: "Failed to fetch product count" });
-  }
-});
-
 export default router;

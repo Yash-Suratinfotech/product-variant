@@ -7,7 +7,7 @@ const router = express.Router();
 // Ensure the user is authenticated
 router.use(shopify.validateAuthenticatedSession());
 
-// Get all option sets for a shop
+// Get /api/option-set
 router.get("/", async (req, res) => {
   try {
     const { shop } = res.locals.shopify.session;
@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Create new option set
+// POST /api/option-set
 router.post("/", async (req, res) => {
   const { shop } = res.locals.shopify.session;
   const { name, description, status, is_template, sales_channels, fields } =
@@ -67,7 +67,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Assign option set to products
+// POST /api/option-set/:setId/products
 router.post("/:setId/products", async (req, res) => {
   const { shop } = res.locals.shopify.session;
   const { setId } = req.params;
@@ -82,6 +82,20 @@ router.post("/:setId/products", async (req, res) => {
     );
     await Promise.all(assignments);
     res.status(200).json({ success: true, assigned: productIds.length });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/option-set/count
+router.get("/count", async (req, res) => {
+  try {
+    const { shop } = res.locals.shopify.session;
+    const optionSets = await db.query(
+      "SELECT * FROM option_sets WHERE shop_id = $1 ORDER BY created_at DESC",
+      [shop]
+    );
+    res.status(200).json({ count: optionSets.rows.length });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

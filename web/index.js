@@ -8,6 +8,7 @@ import shopify from "./shopify.js";
 import PrivacyWebhookHandlers from "./privacy.js";
 
 // Import API routes
+import storeRoutes from "./api/store.js";
 import productRoutes from "./api/products.js";
 import optionSetRoutes from "./api/option-set.js";
 
@@ -43,6 +44,7 @@ app.use("/api/*", shopify.validateAuthenticatedSession());
 app.use(express.json());
 
 // 👇 mount /apis routes
+app.use("/api/store", storeRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/option-set", optionSetRoutes);
 

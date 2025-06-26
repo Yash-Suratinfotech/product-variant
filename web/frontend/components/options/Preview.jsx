@@ -24,7 +24,6 @@ export function Preview() {
             <BlockStack gap={300}>
               <SkeletonDisplayText />
               <SkeletonBodyText />
-              
             </BlockStack>
           </InlineGrid>
         </Box>

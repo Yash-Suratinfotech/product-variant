@@ -2,7 +2,7 @@
 
 client_id = "e7c1445b2187dabbdfc05c4adbb49ac6"
 name = "product-variant"
-handle = "product-variant-14"
+handle = "product-variant-v2"
 application_url = "https://example.com/"
 embedded = true
 
