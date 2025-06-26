@@ -24,18 +24,17 @@ router.get("/", async (req, res) => {
 // POST /api/option-set
 router.post("/", async (req, res) => {
   const { shop } = res.locals.shopify.session;
-  const { name, description, status, is_template, sales_channels, fields } =
+  const { name, status, is_template, sales_channels, fields } =
     req.body;
   const client = await db.getClient();
 
   try {
     await client.query("BEGIN");
     const optionSetResult = await client.query(
-      "INSERT INTO option_sets (shop_id, name, description, status, is_template, sales_channels) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      "INSERT INTO option_sets (shop_id, name, status, is_template, sales_channels) VALUES ($1, $2, $3, $4, $5) RETURNING id",
       [
         shop,
         name,
-        description,
         status,
         is_template,
         JSON.stringify(sales_channels),

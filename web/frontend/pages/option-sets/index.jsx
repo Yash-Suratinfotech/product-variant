@@ -26,11 +26,8 @@ export default function OptionSets() {
   const shopify = useAppBridge();
 
   // table data
-  const { optionSets, loading, fetchOptionSets } =
-    useOptionSets(shopify);
-
-  // Tab management
   const [selected, setSelected] = useState(0);
+  const { optionSets, loading, fetchOptionSets } = useOptionSets(shopify);
 
   // Search and filters
   const [queryValue, setQueryValue] = useState("");
@@ -73,15 +70,9 @@ export default function OptionSets() {
   }));
 
   // Filter handlers
-  const handleFiltersQueryChange = useCallback(
-    (value) => setQueryValue(value),
-    []
-  );
+  const handleFiltersQueryChange = useCallback((v) => setQueryValue(v), []);
 
-  const handleStatusFilterChange = useCallback(
-    (value) => setStatusFilter(value),
-    []
-  );
+  const handleStatusFilterChange = useCallback((v) => setStatusFilter(v), []);
 
   const handleQueryValueRemove = useCallback(() => setQueryValue(""), []);
 
@@ -205,7 +196,7 @@ export default function OptionSets() {
     useIndexResourceState(filteredRows);
 
   return (
-    <Page fullWidth>
+    <Page>
       <TitleBar title={"Option Sets"} />
 
       {/* Header Section */}
@@ -312,7 +303,9 @@ export default function OptionSets() {
                   </Badge>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
-                  <Text variant="bodyMd">{sales_channels.length}</Text>
+                  <Text variant="bodyMd">
+                    {Object.values(sales_channels || {}).filter(Boolean).length}
+                  </Text>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
                   <Text variant="bodyMd" tone="subdued">

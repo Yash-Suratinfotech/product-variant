@@ -20,42 +20,39 @@ import {
 } from "@shopify/polaris-icons";
 import React, { useState, useCallback } from "react";
 
-import {
-  findElementIcon,
-  findElementName,
-  mockElements,
-} from "../../../helpers";
+import { findElementIcon, findElementName } from "../../../helpers";
 import { SelectTypesPopover } from "./selectTypesPopover";
-// import { useCounter } from "../../providers/CounterProvider";
+import { useOptionSet } from "../../../components";
 
 export function ElementsView() {
   const [groupExpanded, setGroupExpanded] = useState(true);
   const [groupHover, setGroupHover] = useState(false);
   const [hoveredElementId, setHoveredElementId] = useState(null);
 
-  // const { count, mockElements } = useCounter();
-  // console.log("✌️count 1--->", mockElements, count);
-
-  // Mock elements data
-  const [elements, setElements] = useState(mockElements);
+  const { selectedOptionSet, elements, setElements } = useOptionSet();
+  console.log("✌️selectedOptionSet 1--->", selectedOptionSet);
 
   const handleElementClick = useCallback((elementId) => {
-    // Update active state
-    setElements((prev) =>
-      prev.map((el) => ({
-        ...el,
-        isActive: el.id === elementId,
-      }))
-    );
+    console.log("✌️elementId --->", elementId);
   }, []);
 
   const handleAddElement = useCallback((selectedType) => {
     const newElement = {
+      groupId: "group-1",
       id: `${selectedType.type}-${Date.now()}`,
       type: selectedType.type,
-      label: selectedType.content,
       icon: selectedType.icon,
-      isActive: false,
+      position: elements?.length || 0,
+      config: {
+        label: selectedType.content,
+        name: `${selectedType.type}-${Date.now()}`,
+        placeholder: `Enter ${selectedType.content}`,
+        helpText: `This is a ${selectedType.content} field`,
+        isRequired: true,
+        defaultValue: `Default text here`,
+        className: `custom-${selectedType.type}`,
+        columnWidth: "100%",
+      },
     };
     setElements((prev) => [...prev, newElement]);
   }, []);
@@ -117,8 +114,9 @@ export function ElementsView() {
               <Collapsible open={groupExpanded} id="group-collapsible">
                 <Box paddingInlineStart="400">
                   <BlockStack gap="150">
-                    {elements.map((e) => (
+                    {elements?.map((e) => (
                       <div
+                        key={e.id}
                         className="element-row"
                         onMouseEnter={() => setHoveredElementId(e.id)}
                         onMouseLeave={() => setHoveredElementId(null)}

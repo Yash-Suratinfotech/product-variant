@@ -15,16 +15,18 @@ import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useOptionSets } from "../../hooks";
-import { mockElements } from "../../helpers";
+// import { mockElements } from "../../helpers";
+import { useOptionSet } from "../../components";
 
 export function Header({ id }) {
   const navigate = useNavigate();
+  const { elements } = useOptionSet();
 
   const { loading, createOptionSets } = useOptionSets(shopify);
 
   // State for option set data
   const [optionSet, setOptionSet] = useState({
-    title: "Diamond Product",
+    title: "New Option Set",
     status: "Active",
     salesChannels: {
       onlineStore: true,
@@ -94,11 +96,10 @@ export function Header({ id }) {
   const handleCreate = async () => {
     const data = {
       name: optionSet.title,
-      description: optionSet.description,
       status: optionSet.status,
       is_template: false,
       sales_channels: optionSet.salesChannels,
-      fields: mockElements,
+      fields: elements,
     };
     const response = await createOptionSets(data);
 

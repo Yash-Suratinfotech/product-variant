@@ -14,6 +14,7 @@ import {
   SkeletonDisplayText,
 } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
+import { SetupGuide } from "./../components";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -24,7 +25,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [storeInfo, setStoreInfo] = useState(null);
   const [stats, setStats] = useState(null);
-  const [setupProgress, setSetupProgress] = useState(0);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -38,18 +39,60 @@ export default function HomePage() {
       ]);
 
       if (storeRes.ok && statsRes.ok) {
-        setStoreInfo(await storeRes.json());
+        const storeInfoData = await storeRes.json();
         const statsData = await statsRes.json();
+        setStoreInfo(storeInfoData);
         setStats(statsData);
 
-        // Calculate setup progress
-        const steps = [
-          statsData.products > 0,
-          statsData.option_sets > 0,
-          statsData.orders > 0,
-        ];
-        const completed = steps.filter(Boolean).length;
-        setSetupProgress((completed / 3) * 100);
+        // Calculate setup Items
+        setItems([
+          {
+            id: 0,
+            title: "Add products to your store",
+            description:
+              "Add your first product to start selling. Easily manage your inventory and showcase your products to customers.",
+            image: {
+              url: "https://cdn.shopify.com/shopifycloud/shopify/assets/admin/home/onboarding/shop_pay_task-70830ae12d3f01fed1da23e607dc58bc726325144c29f96c949baca598ee3ef6.svg",
+              alt: "Illustration highlighting ShopPay integration",
+            },
+            complete: statsData.products > 0,
+            primaryButton: {
+              content: "Add product",
+              props: {
+                url: `https://admin.shopify.com/store/${
+                  storeInfoData?.domain?.split(".")[0]
+                }/products?selectedView=all`,
+                external: false,
+              },
+            },
+          },
+          {
+            id: 1,
+            title: "Create your first option set",
+            description:
+              "Create option sets to offer customizable choices (like size, color, or material) for your products and enhance your customers' shopping experience.",
+            complete: statsData.option_sets > 0,
+            primaryButton: {
+              content: "Create option set",
+              props: {
+                onClick: () => handleAction("/option-sets/new"),
+              },
+            },
+            secondaryButton: {
+              content: "View all option sets",
+              props: {
+                onClick: () => handleAction("/option-sets"),
+              },
+            },
+          },
+          {
+            id: 2,
+            title: "Get your first order",
+            description:
+              "Promote your store and start selling! Share your products, engage with customers, and watch your first order come in.",
+            complete: statsData.orders > 0,
+          },
+        ]);
       }
     } catch (error) {
       shopify.toast.show("There was an error fetching store data", {
@@ -181,40 +224,7 @@ export default function HomePage() {
 
         {/* Setup Guide */}
         <Layout.Section>
-          <Card>
-            <BlockStack gap="400">
-              <BlockStack gap="200">
-                <Text variant="headingMd">Setup guide</Text>
-                <Text color="subdued">
-                  Use this personalized guide to set up product variants for
-                  your store.
-                </Text>
-              </BlockStack>
-
-              <BlockStack gap="200">
-                <InlineStack align="space-between">
-                  <Text>{Math.round(setupProgress)}% completed</Text>
-                  <Text color="subdued">{`${Math.round(
-                    setupProgress / 33.33
-                  )} / 3 completed`}</Text>
-                </InlineStack>
-                <ProgressBar progress={setupProgress} size="small" />
-              </BlockStack>
-
-              <List>
-                <List.Item>
-                  {stats?.products > 0 ? "✓" : "○"} Add products to your store
-                </List.Item>
-                <List.Item>
-                  {stats?.option_sets > 0 ? "✓" : "○"} Create your first option
-                  set
-                </List.Item>
-                <List.Item>
-                  {stats?.orders > 0 ? "✓" : "○"} Get your first order
-                </List.Item>
-              </List>
-            </BlockStack>
-          </Card>
+          <SetupGuide items={items} />
         </Layout.Section>
 
         {/* Stats Grid */}
@@ -232,9 +242,9 @@ export default function HomePage() {
         {/* Current Plan */}
         <Layout.Section>
           <Card>
-            <BlockStack gap="400">
+            <BlockStack gap="200">
               <Text variant="headingMd">Current plan</Text>
-              <Text>
+              <Text color="subdued">
                 You are currently on a{" "}
                 <b>{storeInfo?.plan_display_name || "development"}</b> plan
               </Text>
@@ -242,35 +252,17 @@ export default function HomePage() {
           </Card>
         </Layout.Section>
 
-        {/* Quick Actions */}
-        <Layout.Section>
-          <Card>
-            <BlockStack gap="400">
-              <Text variant="headingMd">Quick actions</Text>
-              <InlineStack gap="200">
-                <Button
-                  variant="primary"
-                  onClick={() => handleAction("/option-sets/new")}
-                >
-                  Create option set
-                </Button>
-                <Button onClick={() => handleAction("/option-sets")}>
-                  View all option sets
-                </Button>
-              </InlineStack>
-            </BlockStack>
-          </Card>
-        </Layout.Section>
-
         {/* Help Section */}
         <Layout.Section secondary>
           <Card>
-            <BlockStack gap="400">
+            <BlockStack gap="200">
               <Text variant="headingMd">Need help setting up your app?</Text>
               <Text color="subdued">
                 Our support team is ready to help with our in-app live chat.
               </Text>
-              <Button fullWidth>Chat with us</Button>
+              <InlineStack>
+                <Button>Chat with us</Button>
+              </InlineStack>
             </BlockStack>
           </Card>
         </Layout.Section>
