@@ -136,7 +136,6 @@ router.get("/stats", async (req, res) => {
           [session.shop]
         ),
       ]);
-    console.log("✌️optionSets --->", optionSets);
 
     const stats = {
       products: products?.body?.count,

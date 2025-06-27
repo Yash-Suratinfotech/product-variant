@@ -166,7 +166,7 @@ const SetupItem = ({
                       {description}
                     </Text>
                     {primaryButton || secondaryButton ? (
-                      <ButtonGroup gap="loose">
+                      <ButtonGroup gap="tight">
                         {primaryButton ? (
                           <Button variant="primary" {...primaryButton.props}>
                             {primaryButton.content}

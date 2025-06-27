@@ -17,6 +17,7 @@ router.get("/", async (req, res) => {
     );
     res.status(200).json(optionSets.rows);
   } catch (error) {
+    console.log("✌️error --->", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -24,21 +25,14 @@ router.get("/", async (req, res) => {
 // POST /api/option-set
 router.post("/", async (req, res) => {
   const { shop } = res.locals.shopify.session;
-  const { name, status, is_template, sales_channels, fields } =
-    req.body;
+  const { name, status, is_template, sales_channels, fields } = req.body;
   const client = await db.getClient();
 
   try {
     await client.query("BEGIN");
     const optionSetResult = await client.query(
       "INSERT INTO option_sets (shop_id, name, status, is_template, sales_channels) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-      [
-        shop,
-        name,
-        status,
-        is_template,
-        JSON.stringify(sales_channels),
-      ]
+      [shop, name, status, is_template, JSON.stringify(sales_channels)]
     );
     const optionSetId = optionSetResult.rows[0].id;
 
@@ -66,6 +60,35 @@ router.post("/", async (req, res) => {
   }
 });
 
+// GET /api/option-set/:setId
+router.get("/:setId", async (req, res) => {
+  const { shop } = res.locals.shopify.session;
+  const { setId } = req.params;
+
+  try {
+    // Fetch the option set for this shop and setId
+    const optionSetResult = await db.query(
+      "SELECT * FROM option_sets WHERE id = $1 AND shop_id = $2",
+      [setId, shop]
+    );
+    if (optionSetResult.rows.length === 0) {
+      return res.status(404).json({ error: "Option set not found" });
+    }
+    const optionSet = optionSetResult.rows[0];
+
+    // Fetch the fields for this option set
+    const fieldsResult = await db.query(
+      "SELECT id, group_id, field_id, type, position, config, created_at FROM option_fields WHERE option_set_id = $1 ORDER BY position ASC, id ASC",
+      [setId]
+    );
+    optionSet.fields = fieldsResult.rows;
+
+    res.status(200).json(optionSet);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // POST /api/option-set/:setId/products
 router.post("/:setId/products", async (req, res) => {
   const { shop } = res.locals.shopify.session;
@@ -73,7 +96,7 @@ router.post("/:setId/products", async (req, res) => {
   const { productIds } = req.body;
 
   try {
-    const assignments = productIds.map((productId) =>
+    const assignments = productIds?.map((productId) =>
       db.query(
         "INSERT INTO product_option_assignments (shop_id, product_id, option_set_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
         [shop, productId, setId]

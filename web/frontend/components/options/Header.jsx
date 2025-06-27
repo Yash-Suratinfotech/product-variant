@@ -11,15 +11,16 @@ import {
   Box,
 } from "@shopify/polaris";
 import { MenuHorizontalIcon, ArrowLeftIcon } from "@shopify/polaris-icons";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useOptionSets } from "../../hooks";
-// import { mockElements } from "../../helpers";
 import { useOptionSet } from "../../components";
 
 export function Header({ id }) {
   const navigate = useNavigate();
+  const shopify = useAppBridge();
   const { elements } = useOptionSet();
 
   const { loading, createOptionSets } = useOptionSets(shopify);
@@ -77,21 +78,12 @@ export function Header({ id }) {
   }, [formData]);
 
   // Form handlers
-  const handleNameChange = useCallback((value) => {
-    setFormData((prev) => ({ ...prev, name: value }));
-  }, []);
-
-  const handleStatusChange = useCallback((value) => {
-    setFormData((prev) => ({ ...prev, status: value }));
-  }, []);
-
-  const handleOnlineStoreChange = useCallback((value) => {
-    setFormData((prev) => ({ ...prev, onlineStore: value }));
-  }, []);
-
-  const handlePointOfSaleChange = useCallback((value) => {
-    setFormData((prev) => ({ ...prev, pointOfSale: value }));
-  }, []);
+  const handleFormChange = useCallback(
+    (field) => (value) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   const handleCreate = async () => {
     const data = {
@@ -169,7 +161,7 @@ export function Header({ id }) {
             <TextField
               label="Name"
               value={formData.name}
-              onChange={handleNameChange}
+              onChange={handleFormChange("name")}
               autoComplete="off"
             />
 
@@ -178,7 +170,7 @@ export function Header({ id }) {
               label="Status"
               options={statusOptions}
               value={formData.status}
-              onChange={handleStatusChange}
+              onChange={handleFormChange("status")}
             />
 
             {/* Sales Channels */}
@@ -191,12 +183,12 @@ export function Header({ id }) {
                   <Checkbox
                     label="Online Store"
                     checked={formData.onlineStore}
-                    onChange={handleOnlineStoreChange}
+                    onChange={handleFormChange("onlineStore")}
                   />
                   <Checkbox
                     label="Point of Sale"
                     checked={formData.pointOfSale}
-                    onChange={handlePointOfSaleChange}
+                    onChange={handleFormChange("pointOfSale")}
                   />
                 </BlockStack>
               </Box>

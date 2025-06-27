@@ -61,7 +61,16 @@ export default function HomePage() {
               props: {
                 url: `https://admin.shopify.com/store/${
                   storeInfoData?.domain?.split(".")[0]
-                }/products?selectedView=all`,
+                }/products/new`,
+                external: false,
+              },
+            },
+            secondaryButton: {
+              content: "Import products",
+              props: {
+                url: `https://admin.shopify.com/store/${
+                  storeInfoData?.domain?.split(".")[0]
+                }/products?modal=import`,
                 external: false,
               },
             },

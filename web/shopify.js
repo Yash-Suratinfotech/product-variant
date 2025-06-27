@@ -12,7 +12,7 @@ const DB_URL = process.env.DB_URL;
 // See the ensureBilling helper to learn more about billing in this template.
 const billingConfig = {
   "My Shopify One-Time Charge": {
-    // This is an example configuration that would do a one-time charge for $5 (only USD is currently supported)
+    // This is an example configuration that would do a one-time charge for $12 (only USD is currently supported)
     amount: 12.0,
     currencyCode: "USD",
     interval: BillingInterval.Every30Days,
