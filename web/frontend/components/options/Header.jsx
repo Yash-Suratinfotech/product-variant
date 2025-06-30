@@ -57,6 +57,7 @@ export function Header({ id }) {
   const handleSave = useCallback(() => {
     // Update the option set with form data
     setOptionSet({
+      ...optionSet,
       name: formData.name,
       status: formData.status,
       sales_channels: {
@@ -82,6 +83,8 @@ export function Header({ id }) {
       is_template: false,
       sales_channels: optionSet.sales_channels,
       fields: elements,
+      all_product: optionSet.all_product,
+      products: optionSet?.products,
     };
     await createOptionSets(payload);
   };
@@ -93,6 +96,8 @@ export function Header({ id }) {
       is_template: false,
       sales_channels: optionSet.sales_channels,
       fields: elements,
+      all_product: optionSet.all_product,
+      products: optionSet?.products,
     };
     await updateOptionSet(id, data);
   };

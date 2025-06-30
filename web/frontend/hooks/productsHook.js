@@ -12,9 +12,11 @@ export const productsHook = () => {
       const response = await fetch(`/api/products?title=${encodeURIComponent(search)}`);
       const data = await response.json();
       setProducts(data || []);
+      return data || [];
     } catch (err) {
       console.error("Error fetching products:", err);
       setError("Failed to load products.");
+      return [];
     } finally {
       setLoading(false);
     }

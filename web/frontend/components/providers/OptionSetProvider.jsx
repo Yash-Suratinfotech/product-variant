@@ -9,6 +9,9 @@ export const OptionSetProvider = ({ children }) => {
   const navigate = useNavigate();
   const shopify = useAppBridge();
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const NewOptionData = {
     name: "New Option Set",
     status: "Active",
@@ -22,8 +25,6 @@ export const OptionSetProvider = ({ children }) => {
   const [selectedOptionSet, setSelectedOptionSet] = useState(null);
   const [elements, setElements] = useState([]);
   const [element, setElement] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const updateElementInElements = (updatedElement) => {
     setElements((prev) =>
@@ -104,6 +105,8 @@ export const OptionSetProvider = ({ children }) => {
             onlineStore: data?.sales_channels?.onlineStore,
             pointOfSale: data?.sales_channels?.pointOfSale,
           },
+          all_product: data?.all_product || false,
+          products: data?.products || [],
         };
         setOptionSet(optionSetData);
 

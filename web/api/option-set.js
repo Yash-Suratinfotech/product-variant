@@ -1,11 +1,7 @@
 import express from "express";
-// import shopify from "../shopify.js";
 import db from "./db.js";
 
 const router = express.Router();
-
-// Ensure the user is authenticated
-// router.use(shopify.validateAuthenticatedSession());
 
 // Get /api/option-set
 router.get("/", async (req, res) => {
@@ -17,7 +13,6 @@ router.get("/", async (req, res) => {
     );
     res.status(200).json(optionSets.rows);
   } catch (error) {
-    console.log("✌️error --->", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -25,17 +20,40 @@ router.get("/", async (req, res) => {
 // POST /api/option-set
 router.post("/", async (req, res) => {
   const { shop } = res.locals.shopify.session;
-  const { name, status, is_template, sales_channels, fields } = req.body;
+  const {
+    name,
+    status,
+    is_template,
+    sales_channels,
+    fields,
+    all_product,
+    products,
+  } = req.body;
+
   const client = await db.getClient();
 
   try {
     await client.query("BEGIN");
+    if (!all_product && (!products || products.length === 0)) {
+      return res
+        .status(400)
+        .json({ error: "Please select at least one product." });
+    }
+
     const optionSetResult = await client.query(
-      "INSERT INTO option_sets (shop_id, name, status, is_template, sales_channels) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-      [shop, name, status, is_template, JSON.stringify(sales_channels)]
+      "INSERT INTO option_sets (shop_id, name, status, is_template, sales_channels, all_product) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      [
+        shop,
+        name,
+        status,
+        is_template,
+        JSON.stringify(sales_channels),
+        all_product,
+      ]
     );
     const optionSetId = optionSetResult.rows[0].id;
 
+    // Insert fields for this option set
     for (const field of fields) {
       await client.query(
         "INSERT INTO option_fields (option_set_id, group_id, field_id, type, position, config) VALUES ($1, $2, $3, $4, $5, $6)",
@@ -47,6 +65,14 @@ router.post("/", async (req, res) => {
           field.position,
           JSON.stringify(field.config),
         ]
+      );
+    }
+
+    // Assign products to this option set
+    for (const productId of products) {
+      await client.query(
+        "INSERT INTO product_option_assignments (shop_id, product_id, option_set_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
+        [shop, productId, optionSetId]
       );
     }
 
@@ -83,6 +109,13 @@ router.get("/:setId", async (req, res) => {
     );
     optionSet.fields = fieldsResult.rows;
 
+    // Fetch the products assigned to this option set
+    const productsResult = await db.query(
+      "SELECT product_id FROM product_option_assignments WHERE option_set_id = $1 AND shop_id = $2",
+      [setId, shop]
+    );
+    optionSet.products = productsResult.rows.map((row) => row.product_id);
+
     res.status(200).json(optionSet);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -93,16 +126,22 @@ router.get("/:setId", async (req, res) => {
 router.put("/:setId", async (req, res) => {
   const { shop } = res.locals.shopify.session;
   const { setId } = req.params;
-  const { name, status, sales_channels, fields } = req.body;
+  const { name, status, sales_channels, fields, all_product, products } =
+    req.body;
   const client = await db.getClient();
 
   try {
     await client.query("BEGIN");
+    if (!all_product && (!products || products.length === 0)) {
+      return res
+        .status(400)
+        .json({ error: "Please select at least one product." });
+    }
 
     // Update the option set
     await client.query(
-      "UPDATE option_sets SET name = $1, status = $2, sales_channels = $3 WHERE id = $4 AND shop_id = $5",
-      [name, status, JSON.stringify(sales_channels), setId, shop]
+      "UPDATE option_sets SET name = $1, status = $2, sales_channels = $3, all_product = $4 WHERE id = $5 AND shop_id = $6",
+      [name, status, JSON.stringify(sales_channels), all_product, setId, shop]
     );
 
     // Delete existing fields for this option set
@@ -122,6 +161,20 @@ router.put("/:setId", async (req, res) => {
           field.position,
           JSON.stringify(field.config),
         ]
+      );
+    }
+
+    // Clear existing product assignments
+    await client.query(
+      "DELETE FROM product_option_assignments WHERE option_set_id = $1 AND shop_id = $2",
+      [setId, shop]
+    );
+
+    // Assign products to this option set
+    for (const productId of products) {
+      await client.query(
+        "INSERT INTO product_option_assignments (shop_id, product_id, option_set_id) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
+        [shop, productId, setId]
       );
     }
 

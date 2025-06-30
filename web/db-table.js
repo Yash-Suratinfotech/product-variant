@@ -15,10 +15,10 @@ await client.query(`
     id SERIAL PRIMARY KEY,
     shop_id VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    description TEXT,
     status VARCHAR(255) NOT NULL DEFAULT 'Draft',
     sales_channels JSONB DEFAULT '[]',
     is_template BOOLEAN DEFAULT false,
+    all_product BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
