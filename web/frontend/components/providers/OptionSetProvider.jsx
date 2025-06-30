@@ -110,8 +110,12 @@ export const OptionSetProvider = ({ children }) => {
         };
         setOptionSet(optionSetData);
 
-        const elementsData = data?.fields;
+        const elementsData = data?.fields.map((field) => ({
+          ...field,
+          id: field.field_id,
+        }));
         setElements(elementsData || []);
+        
       } else {
         shopify?.toast?.show(data?.error || "Error fetching option set", {
           isError: true,

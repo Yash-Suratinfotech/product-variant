@@ -84,7 +84,7 @@ export function Header({ id }) {
       sales_channels: optionSet.sales_channels,
       fields: elements,
       all_product: optionSet.all_product,
-      products: optionSet?.products,
+      products: optionSet?.products || [],
     };
     await createOptionSets(payload);
   };
@@ -97,7 +97,7 @@ export function Header({ id }) {
       sales_channels: optionSet.sales_channels,
       fields: elements,
       all_product: optionSet.all_product,
-      products: optionSet?.products,
+      products: optionSet?.products || [],
     };
     await updateOptionSet(id, data);
   };
