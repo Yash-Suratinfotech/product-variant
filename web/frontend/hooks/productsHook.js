@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-export const useProducts = () => {
+export const productsHook = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

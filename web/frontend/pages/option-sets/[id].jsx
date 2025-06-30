@@ -1,4 +1,5 @@
 import { OptionLayout } from "../../components/options";
+import { OptionSetProvider } from "../../components";
 import { useParams } from "react-router-dom";
 
 export default function OptionSet() {
@@ -6,7 +7,9 @@ export default function OptionSet() {
 
   return (
     <div>
-      <OptionLayout id={id} />
+      <OptionSetProvider>
+        <OptionLayout id={id} />
+      </OptionSetProvider>
     </div>
   );
 }

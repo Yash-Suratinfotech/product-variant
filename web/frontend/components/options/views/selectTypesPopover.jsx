@@ -61,8 +61,13 @@ export function SelectTypesPopover({
       content: (
         <InlineStack align="space-between" blockAlign="center">
           <InlineStack gap="200" blockAlign="center">
-            <Icon source={type.icon} tone="base" />
-            <Text variant="bodyMd">{type.content}</Text>
+            <Icon
+              source={type.icon}
+              tone={type.disabled ? "subdued" : "base"}
+            />
+            <Text variant="bodyMd" tone={type.disabled ? "disabled" : ""}>
+              {type.content}
+            </Text>
           </InlineStack>
           {type.disabled && (
             <div style={{ width: "14px", height: "14px" }}>
@@ -71,10 +76,14 @@ export function SelectTypesPopover({
           )}
         </InlineStack>
       ),
-      onAction: () => {
-        onItemSelect(type);
-        setPopoverActive(false);
-      },
+      ...(type.disabled
+        ? {}
+        : {
+            onAction: () => {
+              onItemSelect(type);
+              setPopoverActive(false);
+            },
+          }),
     }));
   };
 

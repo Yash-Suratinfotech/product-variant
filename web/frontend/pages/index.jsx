@@ -8,8 +8,6 @@ import {
   InlineGrid,
   Banner,
   InlineStack,
-  ProgressBar,
-  List,
   SkeletonBodyText,
   SkeletonDisplayText,
 } from "@shopify/polaris";

@@ -35,8 +35,8 @@ export const defaultInputTypes = [
     type: "textarea",
   },
   { content: "Number", icon: HashtagIcon, disabled: false, type: "number" },
-  { content: "Phone", icon: PhoneIcon, disabled: true, type: "tel" },
-  { content: "Email", icon: EmailIcon, disabled: true, type: "email" },
+  { content: "Phone", icon: PhoneIcon, disabled: false, type: "tel" },
+  { content: "Email", icon: EmailIcon, disabled: false, type: "email" },
   { content: "Hidden Field", icon: HideIcon, disabled: true, type: "hidden" },
   {
     content: "Datetime",

@@ -1,2 +1,1 @@
-export { useOptionSets } from "./useOptionSets";
-export { useProducts } from "./useProducts";
+export { productsHook } from "./productsHook";

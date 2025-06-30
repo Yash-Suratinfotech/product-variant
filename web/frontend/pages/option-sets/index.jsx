@@ -19,15 +19,16 @@ import { useAppBridge, TitleBar } from "@shopify/app-bridge-react";
 import { useNavigate } from "react-router-dom";
 
 import { sortOptions } from "../../helpers";
-import { useOptionSets } from "../../hooks";
 
 export default function OptionSets() {
   const navigate = useNavigate();
   const shopify = useAppBridge();
 
   // table data
+  const [optionSets, setOptionSets] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [selected, setSelected] = useState(0);
-  const { optionSets, loading, fetchOptionSets } = useOptionSets(shopify);
 
   // Search and filters
   const [queryValue, setQueryValue] = useState("");
@@ -56,9 +57,32 @@ export default function OptionSets() {
     [navigate]
   );
 
+  const fetchOptionSets = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/option-set");
+      const data = await response?.json();
+      if (response.ok) {
+        setOptionSets(data);
+      } else {
+        setOptionSets([]);
+        shopify?.toast?.show(data?.error || "Failed to load option sets.", {
+          isError: true,
+        });
+        setError(data?.error || "Failed to load option sets.");
+      }
+    } catch {
+      shopify?.toast?.show("Failed to load option sets.", { isError: true });
+      setError("Failed to load option sets.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchOptionSets();
-  }, [fetchOptionSets]);
+  }, []);
 
   // Tab configuration
   const tabs = ["All", "Active", "Draft"].map((item, index) => ({

@@ -10,12 +10,12 @@ import {
 } from "@shopify/polaris";
 import { ImageIcon } from "@shopify/polaris-icons";
 import { useEffect, useState } from "react";
-import { useProducts } from "../../../hooks";
+import { productsHook } from "../../../hooks";
 
 export const ProductPicker = ({ open, onClose, onSelect }) => {
   const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState("");
-  const { products, loading, fetchProducts } = useProducts();
+  const { products, loading, fetchProducts } = productsHook();
 
   useEffect(() => {
     if (open) fetchProducts(search);

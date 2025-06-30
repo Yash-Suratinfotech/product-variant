@@ -11,48 +11,41 @@ import {
   Box,
 } from "@shopify/polaris";
 import { MenuHorizontalIcon, ArrowLeftIcon } from "@shopify/polaris-icons";
-import { useAppBridge } from "@shopify/app-bridge-react";
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useOptionSets } from "../../hooks";
 import { useOptionSet } from "../../components";
 
 export function Header({ id }) {
   const navigate = useNavigate();
-  const shopify = useAppBridge();
-  const { elements } = useOptionSet();
 
-  const { loading, createOptionSets } = useOptionSets(shopify);
-
-  // State for option set data
-  const [optionSet, setOptionSet] = useState({
-    title: "New Option Set",
-    status: "Active",
-    salesChannels: {
-      onlineStore: true,
-      pointOfSale: false,
-    },
-  });
+  const {
+    optionSet,
+    setOptionSet,
+    elements,
+    loading,
+    createOptionSets,
+    updateOptionSet,
+  } = useOptionSet();
 
   // Modal and popover states
   const [modalActive, setModalActive] = useState(false);
 
   // Form state for modal
   const [formData, setFormData] = useState({
-    name: optionSet.title,
+    name: optionSet.name,
     status: optionSet.status,
-    onlineStore: optionSet.salesChannels.onlineStore,
-    pointOfSale: optionSet.salesChannels.pointOfSale,
+    onlineStore: optionSet.sales_channels?.onlineStore,
+    pointOfSale: optionSet.sales_channels?.pointOfSale,
   });
 
   // Modal handlers
   const handleModalOpen = useCallback(() => {
     setFormData({
-      name: optionSet.title,
+      name: optionSet.name,
       status: optionSet.status,
-      onlineStore: optionSet.salesChannels.onlineStore,
-      pointOfSale: optionSet.salesChannels.pointOfSale,
+      onlineStore: optionSet.sales_channels?.onlineStore,
+      pointOfSale: optionSet.sales_channels?.pointOfSale,
     });
     setModalActive(true);
   }, [optionSet]);
@@ -64,17 +57,14 @@ export function Header({ id }) {
   const handleSave = useCallback(() => {
     // Update the option set with form data
     setOptionSet({
-      title: formData.name,
+      name: formData.name,
       status: formData.status,
-      salesChannels: {
+      sales_channels: {
         onlineStore: formData.onlineStore,
         pointOfSale: formData.pointOfSale,
       },
     });
     setModalActive(false);
-
-    // You can add API call here to save data
-    console.log("Saved data:", formData);
   }, [formData]);
 
   // Form handlers
@@ -86,18 +76,25 @@ export function Header({ id }) {
   );
 
   const handleCreate = async () => {
-    const data = {
-      name: optionSet.title,
+    const payload = {
+      name: optionSet.name,
       status: optionSet.status,
       is_template: false,
-      sales_channels: optionSet.salesChannels,
+      sales_channels: optionSet.sales_channels,
       fields: elements,
     };
-    const response = await createOptionSets(data);
+    await createOptionSets(payload);
+  };
 
-    if (response?.ok) {
-      navigate(`/option-sets/${data.id}`);
-    }
+  const handleUpdate = async () => {
+    const data = {
+      name: optionSet.name,
+      status: optionSet.status,
+      is_template: false,
+      sales_channels: optionSet.sales_channels,
+      fields: elements,
+    };
+    await updateOptionSet(id, data);
   };
 
   // Status options for select
@@ -118,7 +115,7 @@ export function Header({ id }) {
               onClick={() => navigate(`/option-sets`)}
             />
             <Text variant="bodyLg" as="h4" fontWeight="semibold">
-              {optionSet.title} {id ? `- ${id}` : ""}
+              {optionSet.name}
             </Text>
             <Badge tone={optionSet.status === "Active" ? "success" : undefined}>
               {optionSet.status}
@@ -132,8 +129,11 @@ export function Header({ id }) {
           </InlineStack>
 
           <InlineStack gap="300">
-            <Button onClick={handleCreate} loading={loading}>
-              Save
+            <Button
+              onClick={id == undefined ? handleCreate : handleUpdate}
+              loading={loading}
+            >
+              {id == undefined ? "Create" : "Update"} Option Set
             </Button>
           </InlineStack>
         </InlineStack>
