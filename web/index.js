@@ -12,6 +12,9 @@ import storeRoutes from "./api/store.js";
 import productRoutes from "./api/products.js";
 import optionSetRoutes from "./api/option-set.js";
 
+// Import data routes
+import dataOptionSetRoutes from "./api/data/option-set.js";
+
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "3000",
   10
@@ -39,7 +42,18 @@ app.post(
 // If you are adding routes outside of the /api path, remember to
 // also add a proxy rule for them in web/frontend/vite.config.js
 
+const authenticateUser = async (req, res, next) => {
+  let shop = req.query.shop;
+  let shopStore = await shopify.config.sessionStorage.findSessionsByShop(shop);
+  if (shop === shopStore[0].shop) {
+    next();
+  } else {
+    res.send("User not authenticated");
+  }
+};
+
 app.use("/api/*", shopify.validateAuthenticatedSession());
+app.use("/data/*", authenticateUser);
 
 app.use(express.json());
 
@@ -47,6 +61,7 @@ app.use(express.json());
 app.use("/api/store", storeRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/option-set", optionSetRoutes);
+app.use("/data/info/option-set", dataOptionSetRoutes);
 
 app.use(shopify.cspHeaders());
 app.use(serveStatic(STATIC_PATH, { index: false }));

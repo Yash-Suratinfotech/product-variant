@@ -88,6 +88,8 @@ router.post("/", async (req, res) => {
 
 // GET /api/option-set/:setId
 router.get("/:setId", async (req, res) => {
+  console.log("✌️req --->", req);
+  console.log("✌️res --->", res);
   const { shop } = res.locals.shopify.session;
   const { setId } = req.params;
 
